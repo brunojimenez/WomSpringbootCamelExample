@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+    http://camel.apache.org/schema/spring 
+    http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+	<bean id="camelProcessor"
+		class="cl.wom.middleware.bean.CamelProcessor" />
+	<camelContext
+		xmlns="http://camel.apache.org/schema/spring">
+
+		<propertyPlaceholder id="placeholder"
+			location="classpath:sql.properties, app.properties" />
+
+		<route streamCache="true">
+			<from
+				uri="restlet:http://{{service.rest.host}}:{{service.rest.port}}{{service.rest.resource}}?restletMethod=post" />
+			<log message="Inicio \n ${body}" />
+			<bean ref="camelProcessor" />
+		</route>
+	</camelContext>
+</beans>
