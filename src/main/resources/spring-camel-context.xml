@@ -12,13 +12,20 @@
 		xmlns="http://camel.apache.org/schema/spring">
 
 		<propertyPlaceholder id="placeholder"
-			location="classpath:sql.properties, app.properties" />
+			location="classpath:sql.properties, file:${env:APP_ENV}" />
 
 		<route streamCache="true">
 			<from
 				uri="restlet:http://{{service.rest.host}}:{{service.rest.port}}{{service.rest.resource}}?restletMethod=post" />
 			<log message="Inicio \n ${body}" />
+			<setProperty propertyName="userIdProperty">
+				<jsonpath>$.data</jsonpath>
+			</setProperty>
 			<bean ref="camelProcessor" />
+			<setHeader headerName="Content-Type">
+				<simple>application/json</simple>
+			</setHeader>
+			<to uri="velocity:velocity/success.vm" />
 		</route>
 	</camelContext>
 </beans>
